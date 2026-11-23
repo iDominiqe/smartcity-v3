@@ -1,0 +1,791 @@
+/* ==========================================================================
+   NEO SMART-CITY v3 — Frosted Bento Widgets, Charts & Glossy Capsule
+   ========================================================================== */
+
+/* Segmented Timeframe / Chart Mode Switchers */
+.seg-pills {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--glass-tile);
+  border: 1px solid var(--glass-border-subtle);
+}
+
+.seg-pill-btn {
+  border: none;
+  background: transparent;
+  color: var(--ink-muted);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 9px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all 0.16s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.seg-pill-btn:hover {
+  color: var(--ink-primary);
+}
+
+.seg-pill-btn.active {
+  background: #FFFFFF;
+  color: var(--ink-primary);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+}
+
+[data-theme="dark"] .seg-pill-btn.active {
+  background: var(--solar-orange);
+  color: #FFFFFF;
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--solar-orange);
+  box-shadow: 0 0 0 3px rgba(242, 92, 25, 0.22);
+}
+
+/* --------------------------------------------------------------------------
+   CARD 1: Live KPI Mini-Tiles + Solar Panels / Inverter Rows
+   -------------------------------------------------------------------------- */
+.kpi-mini-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.kpi-mini-tile {
+  background: var(--glass-tile);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: 14px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.kpi-mini-lbl {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+
+.kpi-mini-val {
+  font-family: var(--font-display);
+  font-size: 16.5px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.kpi-mini-val small {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  margin-left: 1px;
+}
+
+.mini-underline {
+  height: 3px;
+  border-radius: 99px;
+  background: var(--track-neutral);
+  overflow: hidden;
+}
+
+.mini-underline > span {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: var(--solar-orange-grad);
+  transition: width 0.35s ease;
+}
+
+.hardware-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.hardware-row {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) 24px;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 14px;
+  background: var(--glass-tile);
+  border: 1px solid var(--glass-border-subtle);
+  transition: transform 0.16s ease, border-color 0.16s ease;
+}
+
+.hardware-row:hover {
+  transform: translateY(-1px);
+  border-color: var(--solar-peach-border);
+}
+
+.hardware-thumb {
+  width: 54px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(244, 246, 249, 0.9);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .hardware-thumb {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.hardware-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.hardware-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.hardware-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-primary);
+}
+
+.hardware-sub {
+  font-size: 9.5px;
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+}
+
+/* Striped Diagonal Solar Progress Bar (Reference Signature!) */
+.striped-meter-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.striped-meter-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--ink-muted);
+  margin-bottom: 2px;
+}
+
+.striped-track {
+  position: relative;
+  height: 7px;
+  border-radius: 99px;
+  background: var(--stripe-track);
+  overflow: hidden;
+}
+
+.striped-fill {
+  height: 100%;
+  border-radius: 99px;
+  background-image:
+    repeating-linear-gradient(
+      -55deg,
+      rgba(255, 255, 255, 0.34) 0px,
+      rgba(255, 255, 255, 0.34) 2px,
+      transparent 2px,
+      transparent 5px
+    ),
+    linear-gradient(90deg, #FB923C 0%, #F25C19 100%);
+  transition: width 0.4s ease;
+}
+
+.striped-pct {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  min-width: 30px;
+  text-align: right;
+}
+
+/* --------------------------------------------------------------------------
+   CARD 2: Efficiency Hero Metric + Dot Matrix / Power Bars
+   -------------------------------------------------------------------------- */
+.hero-metric-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-metric-big {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--ink-primary);
+  line-height: 1;
+}
+
+.delta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 7px;
+  border-radius: var(--radius-pill);
+  background: var(--emerald-soft);
+  color: var(--emerald);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.chart-host {
+  position: relative;
+  flex: 1;
+  min-height: 122px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.dot-matrix-svg,
+.power-bars-svg {
+  width: 100%;
+  height: 122px;
+  overflow: visible;
+}
+
+.chart-tooltip {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: var(--ink-primary);
+  color: #FFFFFF;
+  font-size: 10.5px;
+  font-weight: 600;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.14s ease;
+}
+
+.chart-tooltip.visible {
+  opacity: 1;
+}
+
+.chart-axis-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  margin-top: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   CARD 3: Energy Balance Donut + Striped Bars / Semicircular Dial Gauge
+   -------------------------------------------------------------------------- */
+.balance-split {
+  display: grid;
+  grid-template-columns: 126px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.donut-wrap {
+  position: relative;
+  width: 124px;
+  height: 124px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto;
+}
+
+.donut-center {
+  position: absolute;
+  text-align: center;
+  pointer-events: none;
+}
+
+.donut-val {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  line-height: 1.05;
+}
+
+.donut-sub {
+  display: block;
+  font-size: 10px;
+  color: var(--ink-muted);
+  margin-top: 2px;
+}
+
+.balance-bars-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.balance-bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.balance-bar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10.5px;
+}
+
+.balance-bar-head span:first-child {
+  color: var(--ink-secondary);
+  font-weight: 500;
+}
+
+.balance-bar-head strong {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-primary);
+}
+
+.dial-gauge-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+}
+
+.dial-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 10.5px;
+  color: var(--ink-muted);
+}
+
+.dial-meta-row strong {
+  color: var(--ink-primary);
+  font-family: var(--font-mono);
+}
+
+/* --------------------------------------------------------------------------
+   CARD 4: Glossy 3D Battery Capsule + Studio Links
+   -------------------------------------------------------------------------- */
+.battery-head-metrics {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.battery-big {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink-primary);
+}
+
+.battery-rem {
+  font-size: 11px;
+  color: var(--ink-muted);
+}
+
+/* Suno Reference Glossy 3D Capsule Bar */
+.battery-capsule {
+  position: relative;
+  height: 54px;
+  border-radius: 999px;
+  background: var(--capsule-shell);
+  box-shadow: var(--capsule-shadow);
+  padding: 5px;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+}
+
+.battery-capsule-fill {
+  position: relative;
+  height: 100%;
+  width: 84%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #FFB347 0%, #F97316 48%, #EA580C 100%);
+  box-shadow:
+    inset 0 6px 10px rgba(255, 255, 255, 0.55),
+    inset 0 -6px 10px rgba(154, 52, 18, 0.35),
+    0 4px 14px rgba(242, 92, 25, 0.38);
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 14px;
+}
+
+.battery-capsule-fill::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 12px;
+  right: 12px;
+  height: 10px;
+  border-radius: 99px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+
+.battery-capsule-pct {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: #FFFFFF;
+  text-shadow: 0 1px 2px rgba(124, 45, 18, 0.5);
+  z-index: 1;
+}
+
+.studio-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.studio-chip-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 9px;
+  border-radius: 12px;
+  background: var(--glass-tile);
+  border: 1px solid var(--glass-border-subtle);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  transition: all 0.16s ease;
+}
+
+.studio-chip-link:hover {
+  background: var(--solar-peach);
+  color: var(--solar-orange-deep);
+  border-color: var(--solar-peach-border);
+}
+
+.telemetry-micro-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+}
+
+/* --------------------------------------------------------------------------
+   WEATHER CARD & SUNLIGHT HOURS SEMI-ARC
+   -------------------------------------------------------------------------- */
+.weather-main-grid {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.weather-temp-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.weather-sun-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FDE047, #F97316);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+  display: grid;
+  place-items: center;
+  color: #FFFFFF;
+  flex-shrink: 0;
+}
+
+.weather-temp {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  line-height: 1;
+}
+
+.weather-cond {
+  font-size: 10.5px;
+  color: var(--ink-muted);
+  display: block;
+  margin-top: 2px;
+}
+
+.weather-metrics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.w-metric-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--ink-muted);
+}
+
+.w-metric-row strong {
+  color: var(--ink-primary);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.sunlight-arc-box {
+  padding: 8px 10px 4px;
+  border-radius: 14px;
+  background: var(--glass-tile);
+  border: 1px solid var(--glass-border-subtle);
+}
+
+.sunlight-arc-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  color: var(--ink-muted);
+  margin-bottom: 2px;
+}
+
+.sunlight-arc-top strong {
+  color: var(--ink-primary);
+  font-family: var(--font-mono);
+}
+
+.forecast-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.forecast-pill {
+  padding: 6px 7px;
+  border-radius: 12px;
+  background: var(--glass-tile);
+  border: 1px solid var(--glass-border-subtle);
+  text-align: center;
+}
+
+.forecast-pill span {
+  display: block;
+  font-size: 10px;
+  color: var(--ink-muted);
+}
+
+.forecast-pill strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  margin-top: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   ROI SLIDERS & GPU PRELOADER
+   -------------------------------------------------------------------------- */
+.roi-slider-row {
+  position: relative;
+  height: 36px;
+  border-radius: 12px;
+  background: var(--glass-tile);
+  border: 1px solid var(--glass-border-subtle);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 11px;
+}
+
+.roi-slider-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: linear-gradient(90deg, rgba(242, 92, 25, 0.14), rgba(251, 146, 60, 0.28));
+  pointer-events: none;
+}
+
+.roi-slider-lbl,
+.roi-slider-val {
+  position: relative;
+  z-index: 1;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.roi-slider-val {
+  font-family: var(--font-mono);
+  color: var(--solar-orange-deep);
+}
+
+.roi-slider-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: ew-resize;
+  z-index: 2;
+}
+
+.roi-summary-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 11px;
+  border-radius: 13px;
+  background: var(--solar-peach);
+  border: 1px solid var(--solar-peach-border);
+}
+
+.roi-summary-bar strong {
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--solar-orange-deep);
+}
+
+/* Preloader */
+.gpu-preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background: rgba(238, 242, 246, 0.55);
+  backdrop-filter: blur(12px);
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+[data-theme="dark"] .gpu-preloader {
+  background: rgba(13, 17, 22, 0.7);
+}
+
+.gpu-preloader.is-ready {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.preloader-card {
+  width: min(380px, 90vw);
+  padding: 20px 22px;
+  border-radius: 22px;
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.preloader-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.preloader-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.preloader-spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--solar-peach-border);
+  border-top-color: var(--solar-orange);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.preloader-pct {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--solar-orange);
+}
+
+.preloader-track {
+  height: 7px;
+  border-radius: 99px;
+  background: var(--stripe-track);
+  overflow: hidden;
+}
+
+.preloader-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 99px;
+  background: var(--solar-orange-grad);
+  transition: width 0.2s ease;
+}
+
+.preloader-step {
+  font-size: 11.5px;
+  color: var(--ink-secondary);
+}
+
+.preloader-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.preloader-stat {
+  padding: 7px 9px;
+  border-radius: 12px;
+  background: var(--glass-tile);
+  border: 1px solid var(--glass-border-subtle);
+}
+
+.preloader-stat-lbl {
+  display: block;
+  font-size: 10px;
+  color: var(--ink-muted);
+}
+
+.preloader-stat-val {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  margin-top: 2px;
+}

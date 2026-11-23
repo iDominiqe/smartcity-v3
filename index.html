@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-quality="hd">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#EDF1F5" />
+  <title>NEO Smart-City v3 — SolarSync 3D Energy Dashboard</title>
+  <meta name="description" content="Photorealistic studio-daylight 3D Smart City energy command center powered by WebGL, RoomEnvironment PBR, GLSL shaders, WebAssembly, and Web Workers." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="viewport-shell">
+    <!-- FULL-BLEED 3D VIEWPORT CANVAS -->
+    <canvas id="city-canvas" aria-label="Interactive 3D Smart City Diorama"></canvas>
+
+    <!-- WASM-PROJECTED 3D SPATIAL HOTSPOT PINS -->
+    <div id="spatial-pins" class="spatial-pins">
+      <div class="pin-anchor" id="pin-solar">
+        <button type="button" class="pin-bubble" data-focus-sector="solar">
+          <span class="pin-orb amber">☀</span>
+          <span data-i18n="pinSolar">Solar Hub</span>
+          <span class="pin-metric">310 kW</span>
+        </button>
+      </div>
+      <div class="pin-anchor" id="pin-ev">
+        <button type="button" class="pin-bubble" data-focus-sector="ev">
+          <span class="pin-orb emerald">⚡</span>
+          <span data-i18n="pinEv">EV Canopy</span>
+          <span class="pin-metric">180 kW</span>
+        </button>
+      </div>
+      <div class="pin-anchor" id="pin-home">
+        <button type="button" class="pin-bubble active" data-focus-sector="home">
+          <span class="pin-orb">⌂</span>
+          <span data-i18n="pinHome">Solar Home</span>
+          <span class="pin-metric">28.5 kWh</span>
+        </button>
+      </div>
+      <div class="pin-anchor" id="pin-hvac">
+        <button type="button" class="pin-bubble" data-focus-sector="hvac">
+          <span class="pin-orb sky">❄</span>
+          <span data-i18n="pinHvac">NEO Clim®</span>
+          <span class="pin-metric">A+++</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- FLOATING FROSTED HUD LAYER -->
+    <div class="hud-layer">
+      <!-- 1. TOP NAVIGATION BAR -->
+      <header class="top-nav-row">
+        <a href="index.html" class="brand-lockup">
+          <span class="brand-sun-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+            </svg>
+          </span>
+          <span class="brand-title-wrap">
+            <span class="brand-name">NEO SmartCity</span>
+            <span class="brand-v3-pill">v3</span>
+          </span>
+        </a>
+
+        <nav class="nav-pills-wrap" aria-label="City Sectors">
+          <button type="button" class="nav-pill-btn active" data-focus-sector="overview" data-i18n="navOverview">Overview</button>
+          <button type="button" class="nav-pill-btn" data-focus-sector="solar" data-i18n="navSolar">Solar Grid</button>
+          <button type="button" class="nav-pill-btn" data-focus-sector="ev" data-i18n="navEv">EV &amp; Battery</button>
+          <button type="button" class="nav-pill-btn" data-focus-sector="home" data-i18n="navHome">Smart Home</button>
+          <button type="button" class="nav-pill-btn" data-focus-sector="hvac" data-i18n="navHvac">NEO Clim</button>
+          <a href="calculator.html" class="nav-pill-btn nav-pill-link" data-i18n="navCalc">Calculators ↗</a>
+        </nav>
+
+        <div class="top-right-cluster">
+          <div class="search-pill-box">
+            <label class="search-pill">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input id="node-search-input" type="search" placeholder="Search nodes..." data-i18n-placeholder="searchPlaceholder" autocomplete="off" />
+            </label>
+            <div id="node-search-dropdown" class="search-dropdown" role="listbox">
+              <button type="button" class="search-item" data-search-sector="home"><span>Smart Solar Home V2H</span><small>3D Focus</small></button>
+              <button type="button" class="search-item" data-search-sector="solar"><span>Solar Microgrid Hub</span><small>310 kW</small></button>
+              <button type="button" class="search-item" data-search-sector="ev"><span>SafeCharge X1 Canopy</span><small>180 kW</small></button>
+              <button type="button" class="search-item" data-search-sector="hvac"><span>NEO Clim® Flagship</span><small>A+++</small></button>
+              <a href="home-studio.html" class="search-item"><span>Open Home 3D Studio</span><small>Page ↗</small></a>
+              <a href="charger-studio.html" class="search-item"><span>Open SafeCharge X1 Studio</span><small>Page ↗</small></a>
+              <a href="calculator.html" class="search-item"><span>Engineering Calculators</span><small>WASM ↗</small></a>
+            </div>
+          </div>
+
+          <button type="button" class="circle-icon-btn" id="btn-cycle-lighting" title="Cycle Daylight / Sunset / Night" aria-label="Cycle Scene Lighting">
+            <span id="lighting-icon">☀️</span>
+          </button>
+
+          <div class="pill-toggle-group" role="group" aria-label="3D Quality">
+            <button type="button" class="mini-seg-btn active" data-quality-btn="hd" data-i18n="qualHd">HD</button>
+            <button type="button" class="mini-seg-btn" data-quality-btn="clay" data-i18n="qualClay">Clay</button>
+          </div>
+
+          <div class="pill-toggle-group" role="group" aria-label="Theme">
+            <button type="button" class="mini-seg-btn active" data-theme-btn="light" data-i18n="themeLight">Light</button>
+            <button type="button" class="mini-seg-btn" data-theme-btn="dark" data-i18n="themeDark">Dark</button>
+            <button type="button" class="mini-seg-btn" data-theme-btn="eco" data-i18n="themeEco">Eco</button>
+          </div>
+
+          <select id="lang-select" class="lang-pill-select" aria-label="Language">
+            <option value="en" selected>EN</option>
+            <option value="fr">FR</option>
+            <option value="ru">RU</option>
+            <option value="bg">BG</option>
+            <option value="ro">RO</option>
+          </select>
+        </div>
+      </header>
+
+      <!-- 2. MIDDLE STAGE ROW (Left Heading + Rail | Open 3D Stage | Right Weather + Mo-Su Rail) -->
+      <section class="mid-stage-row" aria-label="City Controls and Weather">
+        <div class="hero-left-col">
+          <div class="hero-heading-block">
+            <h1 class="hero-title" data-i18n="heroTitle">Smart City Energy</h1>
+            <p class="hero-subtitle" data-i18n="heroSubtitle">Monitor solar production, V2H storage, EV charging, and urban microgrid efficiency.</p>
+          </div>
+
+          <div class="rail-and-kpis">
+            <div class="icon-rail" role="toolbar" aria-label="3D Navigation Rail">
+              <button type="button" class="rail-btn active" data-focus-sector="overview" data-tip="Overview">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2"/></svg>
+              </button>
+              <button type="button" class="rail-btn" data-focus-sector="solar" data-tip="Solar Hub">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/></svg>
+              </button>
+              <button type="button" class="rail-btn" data-focus-sector="ev" data-tip="EV Canopy">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              </button>
+              <button type="button" class="rail-btn" data-focus-sector="home" data-tip="Solar Home">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              </button>
+              <button type="button" class="rail-btn" data-focus-sector="hvac" data-tip="NEO Clim®">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9L4.9 19.1"/></svg>
+              </button>
+              <div class="rail-divider"></div>
+              <button type="button" class="rail-btn active" id="btn-auto-orbit" data-tip="Auto-Orbit">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+              </button>
+              <button type="button" class="rail-btn" id="btn-toggle-roi" data-tip="ROI Estimator">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </button>
+            </div>
+
+            <div class="left-mini-stack">
+              <button type="button" class="mini-stat-glass" id="btn-open-roi-earning">
+                <span class="mini-stat-head">
+                  <span data-i18n="earningTitle">Annual Savings</span>
+                  <span>↗</span>
+                </span>
+                <span class="mini-stat-body">
+                  <span class="mini-stat-icon">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                  </span>
+                  <span>
+                    <span class="mini-stat-val tabular" id="val-earning">€34,578</span>
+                    <span class="mini-stat-sub" data-i18n="earningSub">Projected solar ROI</span>
+                  </span>
+                </span>
+              </button>
+
+              <button type="button" class="mini-stat-glass" id="btn-open-roi-co2">
+                <span class="mini-stat-head">
+                  <span data-i18n="co2Title">CO₂ Offset</span>
+                  <span>↗</span>
+                </span>
+                <span class="mini-stat-body">
+                  <span class="mini-stat-icon amber">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                  </span>
+                  <span>
+                    <span class="mini-stat-val tabular" id="val-co2-left">14.8 t</span>
+                    <span class="mini-stat-sub" data-i18n="co2Sub">Equiv. 680 trees planted</span>
+                  </span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT FLOATING WEATHER + SUNLIGHT ARC + Mo-Su RAIL -->
+        <div class="weather-rail-wrap">
+          <div class="weekday-rail" role="group" aria-label="Weekday Sun Profile">
+            <button type="button" class="day-pill-btn" data-weekday="0">Mo</button>
+            <button type="button" class="day-pill-btn" data-weekday="1">Tu</button>
+            <button type="button" class="day-pill-btn" data-weekday="2">We</button>
+            <button type="button" class="day-pill-btn active" data-weekday="3">Th</button>
+            <button type="button" class="day-pill-btn" data-weekday="4">Fr</button>
+            <button type="button" class="day-pill-btn" data-weekday="5">Sa</button>
+            <button type="button" class="day-pill-btn" data-weekday="6">Su</button>
+          </div>
+
+          <aside class="glass-card weather-card">
+            <div class="card-header">
+              <h2 class="card-title" data-i18n="weatherTitle">Today's Conditions</h2>
+              <button type="button" class="arrow-btn" id="btn-weather-sun-step" title="Advance Sun Angle">↗</button>
+            </div>
+
+            <div class="weather-main-grid">
+              <div class="weather-temp-box">
+                <div class="weather-sun-badge" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5"/><path d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </div>
+                <div>
+                  <span class="weather-temp tabular" id="weather-temp">21°C</span>
+                  <span class="weather-cond" id="weather-cond" data-i18n="weatherClear">Clear Sky</span>
+                </div>
+              </div>
+
+              <div class="weather-metrics-list">
+                <div class="w-metric-row"><span data-i18n="lblIrradiance">Solar Irradiance</span><strong id="w-irradiance">5.8 kWh/m²</strong></div>
+                <div class="w-metric-row"><span data-i18n="lblCloud">Cloud Cover</span><strong id="w-cloud">8%</strong></div>
+                <div class="w-metric-row"><span data-i18n="lblWind">Wind Speed</span><strong id="w-wind">5.8 m/s</strong></div>
+                <div class="w-metric-row"><span data-i18n="lblUv">UV Index</span><strong id="w-uv">6</strong></div>
+              </div>
+            </div>
+
+            <div class="sunlight-arc-box">
+              <div class="sunlight-arc-top">
+                <span data-i18n="lblSunlight">Sunlight Hours Captured</span>
+                <strong id="sunlight-range">06:08 – 18:21</strong>
+              </div>
+              <svg id="sunlight-arc-svg" width="100%" height="70" aria-label="Sunlight Hours Arc"></svg>
+            </div>
+
+            <div class="forecast-strip">
+              <div class="forecast-pill"><span data-i18n="fcToday">Today</span><strong id="fc-t1">21°C</strong></div>
+              <div class="forecast-pill"><span data-i18n="fcFri">Fri</span><strong id="fc-t2">19°C</strong></div>
+              <div class="forecast-pill"><span data-i18n="fcSat">Sat</span><strong id="fc-t3">22°C</strong></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- INLINE ROI QUICK-ESTIMATOR DRAWER -->
+      <aside id="roi-drawer" class="roi-drawer" aria-label="ROI Quick Estimator">
+        <div class="card-header">
+          <h2 class="card-title" data-i18n="roiTitle">ROI Quick Estimator</h2>
+          <button type="button" class="arrow-btn" id="btn-close-roi" aria-label="Close ROI Drawer">✕</button>
+        </div>
+        <div class="roi-slider-row">
+          <div class="roi-slider-fill" id="bar-roof"></div>
+          <span class="roi-slider-lbl" data-i18n="roiRoof">PV Roof Area</span>
+          <span class="roi-slider-val" id="val-roof">180 m²</span>
+          <input class="roi-slider-input" id="input-roof" type="range" min="40" max="700" step="10" value="180" />
+        </div>
+        <div class="roi-slider-row">
+          <div class="roi-slider-fill" id="bar-poles"></div>
+          <span class="roi-slider-lbl" data-i18n="roiPoles">Smart LED Poles</span>
+          <span class="roi-slider-val" id="val-poles">24</span>
+          <input class="roi-slider-input" id="input-poles" type="range" min="0" max="140" step="2" value="24" />
+        </div>
+        <div class="roi-slider-row">
+          <div class="roi-slider-fill" id="bar-ev"></div>
+          <span class="roi-slider-lbl" data-i18n="roiEv">EV Daily Km</span>
+          <span class="roi-slider-val" id="val-ev">60 km</span>
+          <input class="roi-slider-input" id="input-ev" type="range" min="0" max="240" step="5" value="60" />
+        </div>
+        <div class="roi-summary-bar">
+          <div>
+            <strong id="out-roi-savings">€13,820 / yr</strong>
+            <span class="mini-stat-sub" id="out-roi-solar">57,336 kWh · 21.8 t CO₂</span>
+          </div>
+          <a href="calculator.html" class="nav-pill-btn active" style="padding:7px 12px;font-size:11px;" data-i18n="roiOpenCalc">Full Calculators ↗</a>
+        </div>
+      </aside>
+
+      <!-- 3. BOTTOM 4-CARD FROSTED BENTO ROW -->
+      <section class="bento-grid" aria-label="Smart City Energy Telemetry">
+        <!-- CARD 1: Live Microgrid & Hardware -->
+        <article class="glass-card card-microgrid">
+          <div class="card-header">
+            <div class="seg-pills" role="tablist" aria-label="Timeframe">
+              <button type="button" class="seg-pill-btn active" data-timeframe="live"><span class="live-dot"></span><span data-i18n="tfLive">Live</span></button>
+              <button type="button" class="seg-pill-btn" data-timeframe="day" data-i18n="tfDay">Day</button>
+              <button type="button" class="seg-pill-btn" data-timeframe="week" data-i18n="tfWeek">Week</button>
+              <button type="button" class="seg-pill-btn" data-timeframe="month" data-i18n="tfMonth">Month</button>
+              <button type="button" class="seg-pill-btn" data-timeframe="year" data-i18n="tfYear">Year</button>
+            </div>
+          </div>
+
+          <div class="kpi-mini-row">
+            <div class="kpi-mini-tile">
+              <span class="kpi-mini-lbl">☀ <span data-i18n="kpiProd">Production</span></span>
+              <span class="kpi-mini-val tabular" id="kpi-prod-val">442<small>kW</small></span>
+              <span class="mini-underline"><span id="kpi-prod-bar" style="width:76%"></span></span>
+            </div>
+            <div class="kpi-mini-tile">
+              <span class="kpi-mini-lbl">⚡ <span data-i18n="kpiCons">Consumption</span></span>
+              <span class="kpi-mini-val tabular" id="kpi-cons-val">216<small>kW</small></span>
+              <span class="mini-underline"><span id="kpi-cons-bar" style="width:48%"></span></span>
+            </div>
+            <div class="kpi-mini-tile">
+              <span class="kpi-mini-lbl">🔋 <span data-i18n="kpiGrid">Grid Status</span></span>
+              <span class="kpi-mini-val tabular" id="kpi-grid-val">86<small>%</small></span>
+              <span class="mini-underline"><span id="kpi-grid-bar" style="width:86%"></span></span>
+            </div>
+          </div>
+
+          <div class="hardware-list">
+            <div class="hardware-row">
+              <div class="hardware-thumb" aria-hidden="true">
+                <svg width="42" height="34" viewBox="0 0 42 34">
+                  <polygon points="8,8 36,6 30,24 4,26" fill="#1D447E" stroke="#94A3B8" stroke-width="1.4"/>
+                  <line x1="15" y1="7" x2="11" y2="25" stroke="#60A5FA" stroke-width="0.8"/>
+                  <line x1="22" y1="7" x2="18" y2="25" stroke="#60A5FA" stroke-width="0.8"/>
+                  <line x1="29" y1="6" x2="24" y2="24" stroke="#60A5FA" stroke-width="0.8"/>
+                  <line x1="6" y1="16" x2="33" y2="15" stroke="#60A5FA" stroke-width="0.8"/>
+                  <line x1="18" y1="25" x2="18" y2="32" stroke="#475569" stroke-width="2"/>
+                </svg>
+              </div>
+              <div class="hardware-meta">
+                <div class="hardware-top">
+                  <span class="hardware-name" data-i18n="hwPanels">Solar Panels</span>
+                  <span class="hardware-sub" id="hw-panel-sub">480 m² · 02:32</span>
+                </div>
+                <div>
+                  <div class="striped-meter-label"><span data-i18n="hwPanelEff">Panel Efficiency</span><strong class="mono" id="val-panel-eff">94%</strong></div>
+                  <div class="striped-track"><div class="striped-fill" id="bar-panel-eff" style="width:94%"></div></div>
+                </div>
+                <div>
+                  <div class="striped-meter-label"><span data-i18n="hwPanelPerf">Panel Performance</span><strong class="mono" id="val-panel-perf">88%</strong></div>
+                  <div class="striped-track"><div class="striped-fill" id="bar-panel-perf" style="width:88%"></div></div>
+                </div>
+              </div>
+              <a href="home-studio.html" class="arrow-btn" title="Open 3D Home Studio">↗</a>
+            </div>
+
+            <div class="hardware-row">
+              <div class="hardware-thumb" aria-hidden="true">
+                <svg width="40" height="34" viewBox="0 0 40 34">
+                  <rect x="9" y="5" width="22" height="24" rx="4" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+                  <rect x="13" y="9" width="14" height="7" rx="1.5" fill="#1E293B"/>
+                  <rect x="14" y="19" width="12" height="3" rx="1.5" fill="#F25C19"/>
+                  <circle cx="20" cy="25" r="1.5" fill="#10B981"/>
+                </svg>
+              </div>
+              <div class="hardware-meta">
+                <div class="hardware-top">
+                  <span class="hardware-name" data-i18n="hwInverter">SafeCharge Inverter</span>
+                  <span class="hardware-sub" id="hw-inv-sub">500V DC · 03:26</span>
+                </div>
+                <div>
+                  <div class="striped-meter-label"><span data-i18n="hwInvEff">Inverter Efficiency</span><strong class="mono" id="val-inv-eff">96%</strong></div>
+                  <div class="striped-track"><div class="striped-fill" id="bar-inv-eff" style="width:96%"></div></div>
+                </div>
+                <div>
+                  <div class="striped-meter-label"><span data-i18n="hwInvLoad">Load Capacity</span><strong class="mono" id="val-inv-load">82%</strong></div>
+                  <div class="striped-track"><div class="striped-fill" id="bar-inv-load" style="width:82%"></div></div>
+                </div>
+              </div>
+              <a href="charger-studio.html" class="arrow-btn" title="Open SafeCharge X1 Studio">↗</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- CARD 2: Solar Energy Efficiency (Dot Matrix / Power Spectrum) -->
+        <article class="glass-card card-efficiency">
+          <div class="card-header">
+            <h2 class="card-title" data-i18n="effTitle">Solar Energy Efficiency</h2>
+            <div class="card-actions">
+              <div class="seg-pills" role="tablist">
+                <button type="button" class="seg-pill-btn active" data-eff-mode="dots" data-i18n="effTabDots">Dots</button>
+                <button type="button" class="seg-pill-btn" data-eff-mode="power" data-i18n="effTabPower">Power</button>
+              </div>
+              <a href="parking-studio.html" class="arrow-btn" title="Open HUWART Parking 3D">↗</a>
+            </div>
+          </div>
+
+          <div class="hero-metric-line">
+            <span class="hero-metric-big tabular" id="val-eff-pct">94.8%</span>
+            <span class="delta-pill tabular" id="val-eff-delta">↑ +2.2%</span>
+          </div>
+
+          <div class="chart-host">
+            <div class="chart-tooltip" id="eff-tooltip">12:00 · 95%</div>
+            <svg id="eff-chart-svg" class="dot-matrix-svg" aria-label="Solar Energy Efficiency Chart"></svg>
+            <div class="chart-axis-labels" id="eff-axis-labels">
+              <span>06:00</span><span>09:00</span><span>12:00</span><span>15:00</span><span>18:00</span><span>21:00</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- CARD 3: Energy Balance Donut & Striped Bars / Semicircular Dial Gauge -->
+        <article class="glass-card card-balance">
+          <div class="card-header">
+            <h2 class="card-title" id="card3-title" data-i18n="balTitle">Energy Balance</h2>
+            <div class="card-actions">
+              <div class="seg-pills" role="tablist">
+                <button type="button" class="seg-pill-btn active" data-bal-mode="balance" data-i18n="balTabBalance">Balance</button>
+                <button type="button" class="seg-pill-btn" data-bal-mode="dial" data-i18n="balTabDial">Dial</button>
+              </div>
+              <a href="calculator.html" class="arrow-btn" title="Open Engineering Calculators">↗</a>
+            </div>
+          </div>
+
+          <div id="panel-balance-view" class="balance-split">
+            <div class="donut-wrap">
+              <svg id="donut-balance-svg" width="124" height="124" aria-label="Daily Energy Balance Donut"></svg>
+              <div class="donut-center">
+                <span class="donut-val tabular" id="donut-val">28.6<small style="font-size:10px;font-weight:600;margin-left:1px;">MWh</small></span>
+                <span class="donut-sub" data-i18n="balCenterSub">Production</span>
+              </div>
+            </div>
+
+            <div class="balance-bars-col">
+              <div class="balance-bar-item">
+                <div class="balance-bar-head"><span data-i18n="balRowProd">Production</span><strong id="bal-prod-val">28.6 MWh</strong></div>
+                <div class="striped-track"><div class="striped-fill" id="bal-prod-bar" style="width:92%"></div></div>
+              </div>
+              <div class="balance-bar-item">
+                <div class="balance-bar-head"><span data-i18n="balRowCons">Consumption</span><strong id="bal-cons-val">16.8 MWh</strong></div>
+                <div class="striped-track"><div class="striped-fill" id="bal-cons-bar" style="width:62%"></div></div>
+              </div>
+              <div class="balance-bar-item">
+                <div class="balance-bar-head"><span data-i18n="balRowExp">Exported EV/V2H</span><strong id="bal-exp-val">8.7 MWh</strong></div>
+                <div class="striped-track"><div class="striped-fill" id="bal-exp-bar" style="width:42%"></div></div>
+              </div>
+              <div class="balance-bar-item">
+                <div class="balance-bar-head"><span data-i18n="balRowImp">Grid Imported</span><strong id="bal-imp-val">0.99 MWh</strong></div>
+                <div class="striped-track"><div class="striped-fill" id="bal-imp-bar" style="width:18%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="panel-dial-view" class="dial-gauge-wrap" hidden>
+            <svg id="dial-gauge-svg" width="100%" height="114" aria-label="Total System Output Gauge"></svg>
+            <div class="dial-meta-row">
+              <span><span data-i18n="dialMaxLbl">Max Output Reached</span>: <strong id="dial-max-val">468 kW</strong></span>
+              <span><span data-i18n="dialPeakLbl">Peak</span>: <strong id="dial-peak-time">12:45 PM</strong></span>
+            </div>
+          </div>
+        </article>
+
+        <!-- CARD 4: Na-ion Battery Capsule + Standalone 3D Studios -->
+        <article class="glass-card card-battery">
+          <div class="card-header">
+            <h2 class="card-title" data-i18n="batTitle">Na-ion Battery</h2>
+            <a href="charger-studio.html" class="arrow-btn" title="Open Charger 3D">↗</a>
+          </div>
+
+          <div class="battery-head-metrics">
+            <span class="battery-big tabular" id="val-bat-kwh">84 kWh</span>
+            <span class="battery-rem"><span id="val-bat-rem">20</span> <span data-i18n="batHoursRem">Hours Remaining</span></span>
+          </div>
+
+          <div class="battery-capsule" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="84">
+            <div class="battery-capsule-fill" id="bat-capsule-fill" style="width: 84%;">
+              <span class="battery-capsule-pct" id="bat-capsule-pct">84%</span>
+            </div>
+          </div>
+
+          <div class="studio-quick-grid">
+            <a href="home-studio.html" class="studio-chip-link"><span data-i18n="studioHomeShort">Home 3D ↗</span></a>
+            <a href="charger-studio.html" class="studio-chip-link"><span data-i18n="studioChargerShort">Charger ↗</span></a>
+            <a href="ac-studio.html" class="studio-chip-link"><span data-i18n="studioAcShort">NEO Clim ↗</span></a>
+            <a href="parking-studio.html" class="studio-chip-link"><span data-i18n="studioParkingShort">Parking ↗</span></a>
+          </div>
+
+          <div class="telemetry-micro-foot">
+            <span>Buf: <strong id="hud-gpu-buffers">0</strong></span>
+            <span id="hud-fps">60 FPS</span>
+            <span id="hud-compute-badge">WASM+GLSL</span>
+          </div>
+        </article>
+      </section>
+    </div>
+
+    <!-- TWO-STAGE GPU PRELOADER -->
+    <div id="gpu-preloader" class="gpu-preloader" role="status" aria-live="polite">
+      <div class="preloader-card">
+        <div class="preloader-head">
+          <div class="preloader-title">
+            <span class="preloader-spinner" aria-hidden="true"></span>
+            <span data-i18n="preloaderHeading">Loading 3D Smart City</span>
+          </div>
+          <span class="preloader-pct" id="preloader-pct">0%</span>
+        </div>
+        <div class="preloader-track"><div class="preloader-fill" id="preloader-fill"></div></div>
+        <div class="preloader-step" id="preloader-step">Initializing studio lighting &amp; WASM kernel...</div>
+        <div class="preloader-stats">
+          <div class="preloader-stat"><span class="preloader-stat-lbl" data-i18n="preStatStage">Stage</span><span class="preloader-stat-val" id="preloader-stage">1 / 6</span></div>
+          <div class="preloader-stat"><span class="preloader-stat-lbl" data-i18n="preStatBuffers">Buffers</span><span class="preloader-stat-val" id="preloader-buffers">0 / 32</span></div>
+          <div class="preloader-stat"><span class="preloader-stat-lbl" data-i18n="preStatProfile">Profile</span><span class="preloader-stat-val" id="preloader-profile">HD</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

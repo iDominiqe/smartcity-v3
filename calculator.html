@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEO Smart-City v3 — Engineering Calculators</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="studio-shell">
+    <header class="top-nav-row">
+      <a href="index.html" class="brand-lockup">
+        <span class="brand-sun-icon">☀</span>
+        <span class="brand-title-wrap">
+          <span class="brand-name">← Smart City v3</span>
+          <span class="brand-v3-pill" id="calc-wasm-badge">WASM Kernel</span>
+        </span>
+      </a>
+
+      <nav class="nav-pills-wrap" aria-label="Ecosystem Navigation">
+        <a href="index.html" class="nav-pill-btn">3D City</a>
+        <a href="home-studio.html" class="nav-pill-btn">Home 3D</a>
+        <a href="charger-studio.html" class="nav-pill-btn">SafeCharge X1</a>
+        <a href="ac-studio.html" class="nav-pill-btn">NEO Clim®</a>
+        <a href="parking-studio.html" class="nav-pill-btn">HUWART Parking</a>
+        <a href="calculator.html" class="nav-pill-btn active">Calculators</a>
+      </nav>
+
+      <div class="top-right-cluster">
+        <div class="pill-toggle-group">
+          <button type="button" class="mini-seg-btn active" data-theme-btn="light" data-i18n="themeLight">Light</button>
+          <button type="button" class="mini-seg-btn" data-theme-btn="dark" data-i18n="themeDark">Dark</button>
+          <button type="button" class="mini-seg-btn" data-theme-btn="eco" data-i18n="themeEco">Eco</button>
+        </div>
+        <select id="lang-select" class="lang-pill-select" aria-label="Language">
+          <option value="en" selected>EN</option><option value="fr">FR</option><option value="ru">RU</option><option value="bg">BG</option><option value="ro">RO</option>
+        </select>
+      </div>
+    </header>
+
+    <div>
+      <h1 class="hero-title">Engineering Calculators</h1>
+      <p class="hero-subtitle">Zero-WebGL spatial solar ROI, electrical simultaneity sizing, and Season 2027 AC rental projection.</p>
+    </div>
+
+    <section class="calc-grid">
+      <article class="glass-card calc-card">
+        <div class="card-header">
+          <h2 class="card-title">Municipal Solar &amp; LED ROI</h2>
+          <span class="brand-v3-pill">WASM Math</span>
+        </div>
+
+        <div class="roi-slider-row">
+          <div class="roi-slider-fill" id="bar-m-roof"></div>
+          <span class="roi-slider-lbl">Solar Roof Area</span>
+          <span class="roi-slider-val" id="val-m-roof">180 m²</span>
+          <input class="roi-slider-input" id="m-roof" type="range" min="40" max="800" step="10" value="180" />
+        </div>
+
+        <div class="roi-slider-row">
+          <div class="roi-slider-fill" id="bar-m-poles"></div>
+          <span class="roi-slider-lbl">Smart LED Poles</span>
+          <span class="roi-slider-val" id="val-m-poles">24</span>
+          <input class="roi-slider-input" id="m-poles" type="range" min="0" max="150" step="2" value="24" />
+        </div>
+
+        <label class="calc-select-row">
+          <span>Region Solar Profile</span>
+          <select id="m-sun">
+            <option value="1650">South Europe (1,650)</option>
+            <option value="1320" selected>Central Europe (1,320)</option>
+            <option value="1050">North Europe (1,050)</option>
+          </select>
+        </label>
+
+        <div class="calc-outputs-row">
+          <div class="calc-kpi-box"><span class="calc-kpi-lbl">Clean Output</span><span class="calc-kpi-val" id="out-m-kwh">57,336 kWh</span></div>
+          <div class="calc-kpi-box highlight"><span class="calc-kpi-lbl">Annual Savings</span><span class="calc-kpi-val" id="out-m-eur">€13,761</span></div>
+          <div class="calc-kpi-box"><span class="calc-kpi-lbl">CO₂ Offset</span><span class="calc-kpi-val" id="out-m-co2">21.8 t</span></div>
+        </div>
+      </article>
+
+      <article class="glass-card calc-card">
+        <div class="card-header">
+          <h2 class="card-title">Grid Simultaneity Sizing</h2>
+          <span class="brand-v3-pill">Campsite / Eco-Park</span>
+        </div>
+
+        <div class="roi-slider-row">
+          <div class="roi-slider-fill" id="bar-s-units"></div>
+          <span class="roi-slider-lbl">Mobile-Homes / Pitches</span>
+          <span class="roi-slider-val" id="val-s-units">60</span>
+          <input class="roi-slider-input" id="s-units" type="range" min="10" max="300" step="5" value="60" />
+        </div>
+
+        <div class="roi-slider-row">
+          <div class="roi-slider-fill" id="bar-s-factor"></div>
+          <span class="roi-slider-lbl">Simultaneity Factor</span>
+          <span class="roi-slider-val" id="val-s-factor">65%</span>
+          <input class="roi-slider-input" id="s-factor" type="range" min="30" max="100" step="5" value="65" />
+        </div>
+
+        <label class="calc-select-row">
+          <span>Site Grid Supply</span>
+          <select id="s-grid">
+            <option value="36">36 kVA Existing</option>
+            <option value="60" selected>60 kVA Existing</option>
+            <option value="120">120 kVA Existing</option>
+          </select>
+        </label>
+
+        <div class="calc-outputs-row">
+          <div class="calc-kpi-box"><span class="calc-kpi-lbl">Peak Demand</span><span class="calc-kpi-val" id="out-s-peak">37 kW</span></div>
+          <div class="calc-kpi-box"><span class="calc-kpi-lbl">Na-ion Buffer</span><span class="calc-kpi-val" id="out-s-buffer">0 kWh</span></div>
+          <div class="calc-kpi-box highlight"><span class="calc-kpi-lbl">Grid Status</span><span class="calc-kpi-val" id="out-s-status">Grid OK</span></div>
+        </div>
+      </article>
+
+      <article class="glass-card calc-card">
+        <div class="card-header">
+          <h2 class="card-title">Season 2027 AC Rental</h2>
+          <span class="brand-v3-pill">NEO Clim® Fleet</span>
+        </div>
+
+        <div class="roi-slider-row">
+          <div class="roi-slider-fill" id="bar-r-units"></div>
+          <span class="roi-slider-lbl">AC Units Rented</span>
+          <span class="roi-slider-val" id="val-r-units">35</span>
+          <input class="roi-slider-input" id="r-units" type="range" min="5" max="150" step="5" value="35" />
+        </div>
+
+        <div class="roi-slider-row">
+          <div class="roi-slider-fill" id="bar-r-weeks"></div>
+          <span class="roi-slider-lbl">Season Weeks</span>
+          <span class="roi-slider-val" id="val-r-weeks">16 wks</span>
+          <input class="roi-slider-input" id="r-weeks" type="range" min="8" max="28" step="1" value="16" />
+        </div>
+
+        <label class="calc-select-row">
+          <span>Weekly Guest Rate</span>
+          <select id="r-rate">
+            <option value="49">€49 / week</option>
+            <option value="59" selected>€59 / week</option>
+            <option value="69">€69 / week</option>
+          </select>
+        </label>
+
+        <div class="calc-outputs-row">
+          <div class="calc-kpi-box highlight"><span class="calc-kpi-lbl">Gross Revenue</span><span class="calc-kpi-val" id="out-r-gross">€33,040</span></div>
+          <div class="calc-kpi-box"><span class="calc-kpi-lbl">Operator Margin (40%)</span><span class="calc-kpi-val" id="out-r-margin">€13,216</span></div>
+        </div>
+      </article>
+    </section>
+  </div>
+  <script type="module" src="js/calculator-page.js"></script>
+</body>
+</html>

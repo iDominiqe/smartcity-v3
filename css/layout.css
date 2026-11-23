@@ -1,0 +1,821 @@
+/* ==========================================================================
+   NEO SMART-CITY v3 — Shell, Full-Bleed 3D Stage & Frosted Bento Grid
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  font-family: var(--font-sans);
+  color: var(--ink-primary);
+  background: var(--bg-backdrop);
+  background-color: var(--bg-body-solid);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+select,
+input {
+  font-family: inherit;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Full-Bleed Viewport Shell */
+.viewport-shell {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Interactive 3D WebGL Canvas behind floating frosted UI */
+#city-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+  cursor: grab;
+}
+
+#city-canvas:active {
+  cursor: grabbing;
+}
+
+/* Floating HUD Layer (pointer-events pass through open stage to 3D canvas) */
+.hud-layer {
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 20px 16px;
+}
+
+.hud-layer .glass-interactive,
+.glass-card,
+.top-nav-row,
+.icon-rail,
+.weather-rail-wrap,
+.spatial-pins,
+.bento-grid,
+.roi-drawer {
+  pointer-events: auto;
+}
+
+/* --------------------------------------------------------------------------
+   1. TOP NAVIGATION BAR
+   -------------------------------------------------------------------------- */
+.top-nav-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--glass-bg-soft);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-pill);
+}
+
+.brand-sun-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--solar-peach);
+  border: 1px solid var(--solar-peach-border);
+  display: grid;
+  place-items: center;
+  color: var(--solar-orange);
+}
+
+.brand-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.brand-name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink-primary);
+}
+
+.brand-v3-pill {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  background: var(--solar-peach);
+  color: var(--solar-orange-deep);
+}
+
+/* Center Frosted Nav Pill Strip */
+.nav-pills-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-pill);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.nav-pill-btn {
+  border: none;
+  background: transparent;
+  color: var(--ink-secondary);
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 7px 14px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  white-space: nowrap;
+}
+
+.nav-pill-btn:hover {
+  color: var(--ink-primary);
+  background: rgba(125, 135, 148, 0.1);
+}
+
+.nav-pill-btn.active {
+  background: var(--solar-orange-grad);
+  color: #FFFFFF;
+  font-weight: 600;
+  box-shadow: var(--shadow-orange);
+}
+
+.nav-pill-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Right Action Cluster */
+.top-right-cluster {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.search-pill-box {
+  position: relative;
+}
+
+.search-pill {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: var(--radius-pill);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-pill);
+  color: var(--ink-muted);
+}
+
+.search-pill input {
+  width: 118px;
+  border: none;
+  background: transparent;
+  outline: none;
+  color: var(--ink-primary);
+  font-size: 12px;
+}
+
+.search-pill input::placeholder {
+  color: var(--ink-muted);
+}
+
+.search-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 240px;
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+  padding: 6px;
+  display: none;
+  z-index: 40;
+}
+
+.search-dropdown.is-open {
+  display: block;
+}
+
+.search-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  color: var(--ink-primary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+}
+
+.search-item:hover {
+  background: var(--solar-peach);
+  color: var(--solar-orange-deep);
+}
+
+.search-item small {
+  color: var(--ink-muted);
+  font-size: 10.5px;
+}
+
+.pill-toggle-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  height: 36px;
+  border-radius: var(--radius-pill);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-pill);
+}
+
+.mini-seg-btn {
+  border: none;
+  background: transparent;
+  color: var(--ink-secondary);
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 5px 9px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.mini-seg-btn.active {
+  background: var(--ink-primary);
+  color: var(--glass-tile-hover);
+}
+
+[data-theme="dark"] .mini-seg-btn.active {
+  background: var(--solar-orange);
+  color: #FFFFFF;
+}
+
+.circle-icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--shadow-pill);
+  color: var(--ink-secondary);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform 0.16s ease, color 0.16s ease;
+}
+
+.circle-icon-btn:hover {
+  color: var(--solar-orange);
+  transform: translateY(-1px);
+}
+
+.lang-pill-select {
+  height: 36px;
+  line-height: 34px;
+  padding: 0 11px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--shadow-pill);
+  color: var(--ink-primary);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  vertical-align: middle;
+}
+
+/* --------------------------------------------------------------------------
+   2. MIDDLE STAGE ROW (Title + Rail | Open 3D Center | Weather + Weekday)
+   -------------------------------------------------------------------------- */
+.mid-stage-row {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 270px;
+  pointer-events: none;
+}
+
+.hero-left-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 280px;
+  pointer-events: none;
+}
+
+.hero-heading-block {
+  pointer-events: none;
+  padding: 6px 10px 8px;
+  border-radius: 16px;
+}
+
+[data-theme="dark"] .hero-heading-block {
+  background: rgba(13, 17, 22, 0.42);
+  backdrop-filter: blur(8px);
+}
+
+.hero-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(23px, 2.15vw, 31px);
+  font-weight: 600;
+  line-height: 1.14;
+  letter-spacing: -0.025em;
+  color: var(--ink-primary);
+}
+
+.hero-subtitle {
+  margin: 5px 0 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--ink-secondary);
+}
+
+.rail-and-kpis {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  pointer-events: none;
+}
+
+/* Vertical Circular Icon Rail */
+.icon-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 6px;
+  border-radius: 999px;
+  background: var(--glass-bg-soft);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-pill);
+}
+
+.rail-btn {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: var(--glass-tile);
+  color: var(--ink-secondary);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.rail-btn:hover {
+  color: var(--solar-orange);
+  background: #FFFFFF;
+}
+
+[data-theme="dark"] .rail-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.rail-btn.active {
+  background: var(--solar-peach);
+  color: var(--solar-orange);
+  box-shadow: inset 0 0 0 1px var(--solar-peach-border);
+}
+
+.rail-btn[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 4px 9px;
+  border-radius: 8px;
+  background: var(--ink-primary);
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 30;
+}
+
+.rail-btn[data-tip]:hover::after {
+  opacity: 1;
+}
+
+.rail-divider {
+  height: 1px;
+  width: 20px;
+  margin: 1px auto;
+  background: var(--glass-border-subtle);
+}
+
+/* Left Mini Earning & CO2 Cards (from Suno reference) */
+.left-mini-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 196px;
+  pointer-events: auto;
+}
+
+.mini-stat-glass {
+  padding: 10px 13px;
+  border-radius: 17px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-pill);
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.mini-stat-glass:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+.mini-stat-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink-secondary);
+  margin-bottom: 6px;
+}
+
+.mini-stat-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mini-stat-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  background: var(--solar-peach);
+  color: var(--solar-orange);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.mini-stat-icon.amber {
+  background: rgba(251, 191, 36, 0.18);
+  color: #D97706;
+}
+
+.mini-stat-val {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  line-height: 1.1;
+}
+
+.mini-stat-sub {
+  font-size: 10px;
+  color: var(--ink-muted);
+  display: block;
+  margin-top: 2px;
+}
+
+/* Right Weather Card + Mo-Su Weekday Rail */
+.weather-rail-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.weekday-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 5px 4px;
+  border-radius: 999px;
+  background: var(--glass-bg-soft);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-pill);
+}
+
+.day-pill-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--ink-muted);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+.day-pill-btn:hover {
+  color: var(--ink-primary);
+}
+
+.day-pill-btn.active {
+  background: #FFFFFF;
+  color: var(--solar-orange);
+  box-shadow: 0 3px 10px rgba(242, 92, 25, 0.22);
+}
+
+[data-theme="dark"] .day-pill-btn.active {
+  background: var(--solar-orange);
+  color: #FFFFFF;
+}
+
+.weather-card {
+  width: 274px;
+  padding: 13px 15px;
+}
+
+/* --------------------------------------------------------------------------
+   3. BOTTOM 4-CARD FROSTED BENTO GRID
+   -------------------------------------------------------------------------- */
+.bento-grid {
+  display: grid;
+  grid-template-columns: 1.18fr 1.12fr 1.24fr 0.88fr;
+  gap: 13px;
+  align-items: stretch;
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.card-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  letter-spacing: -0.01em;
+}
+
+.card-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.arrow-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--glass-border-subtle);
+  background: var(--glass-tile);
+  color: var(--ink-secondary);
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+.arrow-btn:hover {
+  background: var(--solar-peach);
+  color: var(--solar-orange);
+  border-color: var(--solar-peach-border);
+}
+
+/* --------------------------------------------------------------------------
+   4. SPATIAL 3D HOTSPOT PINS (WASM Projected)
+   -------------------------------------------------------------------------- */
+.spatial-pins {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.spatial-pins.hidden-pins {
+  opacity: 0;
+}
+
+.pin-anchor {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  pointer-events: auto;
+  transition: opacity 0.2s ease;
+}
+
+.pin-bubble {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px 5px 5px;
+  border-radius: var(--radius-pill);
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-pill);
+  cursor: pointer;
+  color: var(--ink-primary);
+  font-size: 11.5px;
+  font-weight: 600;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.pin-bubble:hover,
+.pin-bubble.active {
+  transform: translateY(-2px) scale(1.03);
+  border-color: var(--solar-peach-border);
+  box-shadow: var(--shadow-orange);
+}
+
+.pin-orb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--solar-orange-grad);
+  color: #FFFFFF;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.pin-orb.amber {
+  background: linear-gradient(135deg, #FBBF24, #F59E0B);
+}
+
+.pin-orb.emerald {
+  background: linear-gradient(135deg, #34D399, #059669);
+}
+
+.pin-orb.sky {
+  background: linear-gradient(135deg, #38BDF8, #0284C7);
+}
+
+.pin-metric {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--solar-orange);
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   5. INLINE ROI QUICK-ESTIMATOR DRAWER
+   -------------------------------------------------------------------------- */
+.roi-drawer {
+  position: fixed;
+  left: 20px;
+  bottom: 245px;
+  width: 320px;
+  z-index: 30;
+  padding: 15px 16px;
+  border-radius: 20px;
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-card);
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.roi-drawer.is-open {
+  display: flex;
+}
+
+/* --------------------------------------------------------------------------
+   6. RESPONSIVE BREAKPOINTS
+   -------------------------------------------------------------------------- */
+@media (max-width: 1260px) {
+  .bento-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .mid-stage-row {
+    flex-direction: column;
+    min-height: 240px;
+  }
+  .weather-rail-wrap {
+    align-self: flex-end;
+  }
+  .left-mini-stack {
+    display: none;
+  }
+}
+
+@media (max-width: 680px) {
+  .hud-layer {
+    padding: 10px 12px 14px;
+  }
+  .bento-grid {
+    grid-template-columns: 1fr;
+  }
+  .weather-card {
+    width: 100%;
+  }
+  .weather-rail-wrap {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

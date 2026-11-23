@@ -1,0 +1,211 @@
+/* ==========================================================================
+   NEO SMART-CITY v3 — Isolated 3D Studio & Engineering Calculator Pages
+   ========================================================================== */
+
+.studio-shell {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px 22px 20px;
+  gap: 14px;
+}
+
+#studio-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+  cursor: grab;
+}
+
+.studio-hud {
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.studio-hud > * {
+  pointer-events: auto;
+}
+
+.studio-mid-overlay {
+  pointer-events: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex: 1;
+  padding-bottom: 6px;
+}
+
+.studio-title-card {
+  pointer-events: auto;
+  max-width: 340px;
+  padding: 15px 18px;
+}
+
+.studio-mode-bar {
+  pointer-events: auto;
+  display: inline-flex;
+  gap: 6px;
+  padding: 5px;
+  border-radius: var(--radius-pill);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-pill);
+}
+
+.studio-mode-btn {
+  border: none;
+  background: transparent;
+  color: var(--ink-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 15px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.studio-mode-btn.active {
+  background: var(--solar-orange-grad);
+  color: #FFFFFF;
+  box-shadow: var(--shadow-orange);
+}
+
+.studio-specs-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.studio-spec-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+  box-shadow: var(--shadow-pill);
+  padding: 13px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.studio-spec-lbl {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.studio-spec-val {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink-primary);
+}
+
+/* Calculators Page */
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: stretch;
+  flex: 1;
+}
+
+.calc-card {
+  padding: 20px;
+  gap: 14px;
+}
+
+.calc-select-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  background: var(--glass-tile);
+  border: 1px solid var(--glass-border-subtle);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-secondary);
+}
+
+.calc-select-row select {
+  border: none;
+  background: transparent;
+  color: var(--ink-primary);
+  font-weight: 600;
+  font-size: 12px;
+  outline: none;
+  cursor: pointer;
+}
+
+.calc-outputs-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 8px;
+  margin-top: auto;
+}
+
+.calc-kpi-box {
+  padding: 12px;
+  border-radius: 15px;
+  background: var(--glass-tile);
+  border: 1px solid var(--glass-border-subtle);
+}
+
+.calc-kpi-box.highlight {
+  background: var(--solar-peach);
+  border-color: var(--solar-peach-border);
+}
+
+.calc-kpi-lbl {
+  display: block;
+  font-size: 10.5px;
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
+.calc-kpi-val {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  margin-top: 3px;
+}
+
+.calc-kpi-box.highlight .calc-kpi-val {
+  color: var(--solar-orange-deep);
+}
+
+@media (max-width: 1080px) {
+  .calc-grid {
+    grid-template-columns: 1fr;
+  }
+  .studio-specs-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .studio-mid-overlay {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .studio-specs-grid {
+    grid-template-columns: 1fr;
+  }
+}
